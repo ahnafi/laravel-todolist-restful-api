@@ -19,7 +19,7 @@ class AuthController extends Controller
         $data = $request->validated();
 
         $user = new User($data);
-        $user['password'] = Hash::make($data['password']);
+        $user->password = Hash::make($data['password']);
         $user->save();
 
         return (new UserResource($user))->response()->setStatusCode(201);

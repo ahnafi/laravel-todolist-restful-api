@@ -1,8 +1,6 @@
-
 # To Do List RestFul Api
 
 Project todolist restful api untuk latihan saya dalam menggunakan Laravel framework.
-
 
 ## Table
 
@@ -39,7 +37,7 @@ deleted_at
 
 ```json
 {
-    "data":{
+    "data": {
         ...
     }
 }
@@ -49,7 +47,7 @@ deleted_at
 
 ```json
 {
-    "errors" : {
+    "errors": {
         ...
     }
 }
@@ -61,12 +59,12 @@ deleted_at
   POST /api/users/register
 ```
 
-| Request Body | Type     | Description           |
-|:-------------| :------- | :-------------------- |
-| `first_name` | `string` | **Required** |
-| `last_name`  | `string`  |  |
-| `email`      | `string:email`  | **Required** |
-| `password`   | `string`  | **Required** , min 8 char |
+| Request Body | Type           | Description               |
+|:-------------|:---------------|:--------------------------|
+| `first_name` | `string`       | **Required**              |
+| `last_name`  | `string`       |                           |
+| `email`      | `string:email` | **Required**              |
+| `password`   | `string`       | **Required** , min 8 char |
 
 ##### Response
 
@@ -102,17 +100,16 @@ deleted_at
 }
 ```
 
-
 #### User Login
 
 ```http
   POST /api/users/login
 ```
 
-| Body      | Type     | Description           |
-| :-------- | :------- | :-------------------- |
-| `email` | `string:email`  | **Required** |
-| `password` | `string`  | **Required** , min 8 char |
+| Body       | Type           | Description               |
+|:-----------|:---------------|:--------------------------|
+| `email`    | `string:email` | **Required**              |
+| `password` | `string`       | **Required** , min 8 char |
 
 ##### Response
 
@@ -125,7 +122,7 @@ deleted_at
         "last_name": "siregar",
         "email": "budionosiregar@gmail.com",
         "photo": null,
-        "token" : "string",
+        "token": "string",
         "created_at": "2025-01-25T07:27:00.000000Z"
     }
 }
@@ -143,17 +140,79 @@ deleted_at
 }
 ```
 
-#### Get item
+#### Get current user
 
 ```http
-  GET /api/items/${id}
+  get /api/users/current
 ```
 
-| Parameter | Type     | Description                       |
-| :-------- | :------- | :-------------------------------- |
-| `id`      | `string` | **Required**. Id of item to fetch |
+| Header          | Type     | Description                         |
+|:----------------|:---------|:------------------------------------|
+| `authorization` | `string` | **Required**. Token dari user login |
 
-#### add(num1, num2)
+##### Response
 
-Takes two numbers and returns the sum.
+- success 200
 
+```json
+{
+    "data": {
+        "first_name": "budi",
+        "last_name": "siregar",
+        "email": "budionosiregar@gmail.com",
+        "photo": null,
+        "token": "string",
+        "created_at": "2025-01-25T07:27:00.000000Z"
+    }
+}
+```
+
+- error
+
+```json
+{
+    "errors": {
+        "message": [
+            "Unauthorized"
+        ]
+    }
+}
+```
+#### Get current user
+
+```http
+  get /api/users/current
+```
+
+| Header          | Type     | Description                         |
+|:----------------|:---------|:------------------------------------|
+| `authorization` | `string` | **Required**. Token dari user login |
+
+##### Response
+
+- success 200
+
+```json
+{
+    "data": {
+        "first_name": "budi",
+        "last_name": "siregar",
+        "email": "budionosiregar@gmail.com",
+        "photo": null,
+        "token": "string",
+        "created_at": "2025-01-25T07:27:00.000000Z"
+    }
+}
+```
+
+- error
+
+```json
+{
+    "errors": {
+        "message": [
+            "Unauthorized"
+        ]
+    }
+}
+```

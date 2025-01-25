@@ -10,7 +10,12 @@ use Tests\TestCase;
 
 class UserTest extends TestCase
 {
-    use RefreshDatabase;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+        User::query()->delete();
+    }
 
     public function testUserRegisterSuccess()
     {
@@ -118,6 +123,54 @@ class UserTest extends TestCase
                 "message" => ["Email or Password is wrong"],
             ]
         ]);
+    }
+
+    public function testUserCurrentSuccess()
+    {
+        $this->seed(UserSeeder::class);
+
+        $this->get("/api/users/current", [
+            'Authorization' => "test"
+        ])->assertStatus(200)
+            ->assertJson([
+                "data" => [
+                    "first_name" => "budi",
+                    "email" => "budi@gmail.com",
+                    "photo" => null,
+                    "last_name" => null,
+                    "token" => "test"
+                ]
+            ]);
+    }
+
+    public function testUserCurrentUnauthorized()
+    {
+        $this->seed(UserSeeder::class);
+
+        $this->get("/api/users/current", [
+//            'Authorization' => "test"
+        ])->assertStatus(401)
+            ->assertJson([
+                "errors" => [
+                    "message" => [
+                        "Unauthorized"
+                    ]
+                ]
+            ]);
+    }
+
+    function testUserCurrentInvalidToken()
+    {
+        $this->get("/api/users/current", [
+            'Authorization' => "test1"
+        ])->assertStatus(401)
+            ->assertJson([
+                "errors" => [
+                    "message" => [
+                        "Unauthorized"
+                    ]
+                ]
+            ]);
     }
 
 }

@@ -1,5 +1,5 @@
 {
-    "name": "todolist_app",
+    "name": "laravel/laravel",
     "type": "project",
     "description": "Project learn laravel framework with create todolist restful api",
     "keywords": ["laravel", "framework"],
@@ -7,6 +7,7 @@
     "require": {
         "php": "^8.2",
         "laravel/framework": "^11.0",
+        "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9"
     },
     "require-dev": {

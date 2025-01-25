@@ -15,7 +15,6 @@ last_name
 email 
 password
 photo
-birth_date
 created_at
 ```
 
@@ -59,7 +58,7 @@ deleted_at
 #### Register User
 
 ```http
-  GET /api/users/register
+  POST /api/users/register
 ```
 
 | Request Body | Type     | Description           |
@@ -71,7 +70,53 @@ deleted_at
 
 ##### Response
 
-- success 201 
+- success 201
+
+```json
+{
+    "data": {
+        "first_name": "budi",
+        "last_name": "siregar",
+        "email": "budionosiregar@gmail.com",
+        "photo": null,
+        "created_at": "2025-01-25T07:27:00.000000Z"
+    }
+}
+```
+
+- error
+
+```json
+{
+    "errors": {
+        "first_name": [
+            "The first name field is required."
+        ],
+        "email": [
+            "The email has already been taken."
+        ],
+        "password": [
+            "The password field must be at least 8 characters."
+        ]
+    }
+}
+```
+
+
+#### User Login
+
+```http
+  POST /api/users/login
+```
+
+| Body      | Type     | Description           |
+| :-------- | :------- | :-------------------- |
+| `email` | `string:email`  | **Required** |
+| `password` | `string`  | **Required** , min 8 char |
+
+##### Response
+
+- success 201
 
 ```json
 {
@@ -79,7 +124,8 @@ deleted_at
         "id": 1,
         "first_name": "budi",
         "last_name": "siregar",
-        "email": "budi@gmail.com"
+        "email": "budi@gmail.com",
+        "token": "string"
     }
 }
 ```
@@ -96,18 +142,6 @@ deleted_at
     }
 }
 ```
-
-
-#### User Login
-
-```http
-  GET /api/users/login
-```
-
-| Body      | Type     | Description           |
-| :-------- | :------- | :-------------------- |
-| `email` | `string:email`  | **Required** |
-| `password` | `string`  | **Required** , min 8 char |
 
 #### Get item
 

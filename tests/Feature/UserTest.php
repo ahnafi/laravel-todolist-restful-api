@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
+use Database\Seeders\UserSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -70,4 +72,52 @@ class UserTest extends TestCase
             ]
         );
     }
+
+    public function testUserLoginSuccess()
+    {
+        $this->seed(UserSeeder::class);
+
+        $this->post("/api/users/login", [
+            "email" => "budi@gmail.com",
+            "password" => "budi12345"
+        ])->assertStatus(200)->assertJson([
+            "data" => [
+                "first_name" => "budi",
+                "email" => "budi@gmail.com"
+            ]
+        ]);
+
+        $user = User::where("email", "budi@gmail.com")->first();
+        self::assertNotNull($user->token);
+    }
+
+    public function testUserLoginEmailPasswordRequired()
+    {
+        $this->seed(UserSeeder::class);
+
+        $this->post("/api/users/login", [
+//            "email" => "budi@gmail.com",
+//            "password" => "budi12345"
+        ])->assertStatus(400)->assertJson([
+            "errors" => [
+                "password" => ["The password field is required."],
+                "email" => ["The email field is required."]
+            ]
+        ]);
+    }
+
+    public function testUserLoginEmailPasswordWrong()
+    {
+        $this->seed(UserSeeder::class);
+
+        $this->post("/api/users/login", [
+            "email" => "budi1@gmail.com",
+            "password" => "budi112345"
+        ])->assertStatus(401)->assertJson([
+            "errors" => [
+                "message" => ["Email or Password is wrong"],
+            ]
+        ]);
+    }
+
 }

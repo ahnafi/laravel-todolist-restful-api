@@ -121,11 +121,12 @@ deleted_at
 ```json
 {
     "data": {
-        "id": 1,
         "first_name": "budi",
         "last_name": "siregar",
-        "email": "budi@gmail.com",
-        "token": "string"
+        "email": "budionosiregar@gmail.com",
+        "photo": null,
+        "token" : "string",
+        "created_at": "2025-01-25T07:27:00.000000Z"
     }
 }
 ```
@@ -135,9 +136,8 @@ deleted_at
 ```json
 {
     "errors": {
-        "email": [
-            "email is registered",
-            "email blablabla"
+        "message": [
+            "Email or Password is wrong"
         ]
     }
 }

@@ -8,3 +8,4 @@ use Illuminate\Support\Facades\Route;
 //})->middleware('auth:sanctum');
 
 Route::post("/users/register", [\App\Http\Controllers\AuthController::class, 'register']);
+Route::post("/users/login", [\App\Http\Controllers\AuthController::class, "login"]);

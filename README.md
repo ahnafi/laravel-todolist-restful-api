@@ -73,6 +73,7 @@ deleted_at
 ```json
 {
     "data": {
+        "id": 1,
         "first_name": "budi",
         "last_name": "siregar",
         "email": "budionosiregar@gmail.com",
@@ -118,6 +119,7 @@ deleted_at
 ```json
 {
     "data": {
+        "id": 1,
         "first_name": "budi",
         "last_name": "siregar",
         "email": "budionosiregar@gmail.com",
@@ -157,6 +159,7 @@ deleted_at
 ```json
 {
     "data": {
+        "id": 1,
         "first_name": "budi",
         "last_name": "siregar",
         "email": "budionosiregar@gmail.com",
@@ -178,6 +181,7 @@ deleted_at
     }
 }
 ```
+
 #### Get current user
 
 ```http
@@ -186,7 +190,7 @@ deleted_at
 
 | Header          | Type     | Description                         |
 |:----------------|:---------|:------------------------------------|
-| `authorization` | `string` | **Required**. Token dari user login |
+| `Authorization` | `string` | **Required**. Token dari user login |
 
 ##### Response
 
@@ -195,6 +199,54 @@ deleted_at
 ```json
 {
     "data": {
+        "id" : 1,
+        "first_name": "budi",
+        "last_name": "siregar",
+        "email": "budionosiregar@gmail.com",
+        "photo": null,
+        "token": "string",
+        "created_at": "2025-01-25T07:27:00.000000Z"
+    }
+}
+```
+
+- error
+
+```json
+{
+    "errors": {
+        "message": [
+            "Unauthorized"
+        ]
+    }
+}
+```
+
+#### Update current user
+
+```http
+  PATCH /api/users/current
+```
+
+| Header          | Type     | Description                         |
+|:----------------|:---------|:------------------------------------|
+| `Authorization` | `string` | **Required**. Token dari user login |
+
+| Body         | Type                       | Description |
+|:-------------|:---------------------------|:------------|
+| `first_name` | `string`                   |             |
+| `last_name`  | `string`                   |             |
+| `password`   | `string`                   |             |
+| `photo`      | `file,image(jpg,png,jpeg)` |             |  
+
+##### Response
+
+- success 200
+
+```json
+{
+    "data": {
+        "id": 1,
         "first_name": "budi",
         "last_name": "siregar",
         "email": "budionosiregar@gmail.com",

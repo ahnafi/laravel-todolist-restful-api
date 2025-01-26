@@ -145,7 +145,7 @@ deleted_at
 #### Get current user
 
 ```http
-  get /api/users/current
+  GET /api/users/current
 ```
 
 | Header          | Type     | Description                         |
@@ -160,46 +160,6 @@ deleted_at
 {
     "data": {
         "id": 1,
-        "first_name": "budi",
-        "last_name": "siregar",
-        "email": "budionosiregar@gmail.com",
-        "photo": null,
-        "token": "string",
-        "created_at": "2025-01-25T07:27:00.000000Z"
-    }
-}
-```
-
-- error
-
-```json
-{
-    "errors": {
-        "message": [
-            "Unauthorized"
-        ]
-    }
-}
-```
-
-#### Get current user
-
-```http
-  get /api/users/current
-```
-
-| Header          | Type     | Description                         |
-|:----------------|:---------|:------------------------------------|
-| `Authorization` | `string` | **Required**. Token dari user login |
-
-##### Response
-
-- success 200
-
-```json
-{
-    "data": {
-        "id" : 1,
         "first_name": "budi",
         "last_name": "siregar",
         "email": "budionosiregar@gmail.com",
@@ -254,6 +214,38 @@ deleted_at
         "token": "string",
         "created_at": "2025-01-25T07:27:00.000000Z"
     }
+}
+```
+
+- error
+
+```json
+{
+    "errors": {
+        "message": [
+            "Unauthorized"
+        ]
+    }
+}
+```
+
+#### logout User
+
+```http
+  POST /api/users/logout
+```
+
+| Header          | Type     | Description                         |
+|:----------------|:---------|:------------------------------------|
+| `Authorization` | `string` | **Required**. Token dari user login |
+
+##### Response
+
+- success 200
+
+```json
+{
+    "data": true
 }
 ```
 

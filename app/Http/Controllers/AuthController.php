@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -44,5 +45,19 @@ class AuthController extends Controller
         $user->save();
 
         return new UserResource($user);
+    }
+
+    public function logout(Request $request): JsonResponse
+    {
+        $user = Auth::user();
+
+        $user->token = null;
+        $user->save();
+
+        Auth::logout();
+
+        return response()->json([
+            "data" => true
+        ]);
     }
 }

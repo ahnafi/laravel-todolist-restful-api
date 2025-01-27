@@ -13,13 +13,12 @@ class Task extends Model
     public $timestamps = true;
     public $incrementing = true;
 
-    protected function casts(): array
-    {
-        return [
-            "due_date" => "datetime",
-            "status" => "boolean"
-        ];
-    }
+    protected $fillable = [
+        "title",
+        "description",
+        "due_date",
+        "status"
+    ];
 
     public function user(): BelongsTo
     {

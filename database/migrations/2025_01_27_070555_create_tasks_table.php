@@ -16,7 +16,8 @@ return new class extends Migration {
             $table->text("description")->nullable();
             $table->dateTime("due_date")->nullable();
             $table->boolean("status")->nullable(false)->default(false);
-            $table->foreign("user_id")->references("id")->on("users");
+            $table->unsignedBigInteger("user_id")->nullable(false);
+            $table->foreign("user_id")->references("id")->on("users")->onDelete("cascade");
             $table->softDeletes();
             $table->timestamps();
         });

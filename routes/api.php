@@ -16,4 +16,6 @@ Route::middleware(\App\Http\Middleware\ApiAuthMiddleware::class)->group(function
     Route::patch("/users/current", [\App\Http\Controllers\UserController::class, 'update']);
     Route::post("/users/logout", [\App\Http\Controllers\AuthController::class, "logout"]);
 
+    Route::post("/tasks", [\App\Http\Controllers\TaskController::class, "create"]);
+
 });

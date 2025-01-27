@@ -15,8 +15,6 @@ class TaskController extends Controller
     {
         $data = $request->validated();
 
-        Log::info("data due_date : " . $request["due_date"]);
-
         $user = Auth::user();
 
         $task = new Task($data);

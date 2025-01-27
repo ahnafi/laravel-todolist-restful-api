@@ -24,6 +24,7 @@ title
 description
 due_Date
 status
+user_id
 created_at
 updated_at
 deleted_at
@@ -261,7 +262,7 @@ deleted_at
 }
 ```
 
-#### Create Todo 
+#### Create Todo
 
 ```http
   POST /api/tasks
@@ -270,7 +271,6 @@ deleted_at
 | Header          | Type     | Description                         |
 |:----------------|:---------|:------------------------------------|
 | `Authorization` | `string` | **Required**. Token dari user login |
-
 
 | Body          | Type          | Description           |
 |:--------------|:--------------|:----------------------|
@@ -290,6 +290,7 @@ deleted_at
         "description": "text",
         "due_date": "datetime",
         "status": false,
+        "user_id": 1,
         "created_at": "timestamp",
         "updated_at": "timestamp",
         "deleted_at": "timestamp"

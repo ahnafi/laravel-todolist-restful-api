@@ -16,7 +16,7 @@ photo
 created_at
 ```
 
-- Todo
+- Task
 
 ```
 id
@@ -246,6 +246,54 @@ deleted_at
 ```json
 {
     "data": true
+}
+```
+
+- error
+
+```json
+{
+    "errors": {
+        "message": [
+            "Unauthorized"
+        ]
+    }
+}
+```
+
+#### Create Todo 
+
+```http
+  POST /api/tasks
+```
+
+| Header          | Type     | Description                         |
+|:----------------|:---------|:------------------------------------|
+| `Authorization` | `string` | **Required**. Token dari user login |
+
+
+| Body          | Type          | Description           |
+|:--------------|:--------------|:----------------------|
+| `title`       | `string`      | **Required**. max 100 |
+| `description` | `string:text` |                       |  
+| `due_date`    | `datetime`    |                       |
+
+##### Response
+
+- success 200
+
+```json
+{
+    "data": {
+        "id": 1,
+        "title": "string",
+        "description": "text",
+        "due_date": "datetime",
+        "status": false,
+        "created_at": "timestamp",
+        "updated_at": "timestamp",
+        "deleted_at": "timestamp"
+    }
 }
 ```
 

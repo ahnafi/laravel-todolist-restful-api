@@ -17,5 +17,6 @@ Route::middleware(\App\Http\Middleware\ApiAuthMiddleware::class)->group(function
     Route::post("/users/logout", [\App\Http\Controllers\AuthController::class, "logout"]);
 
     Route::post("/tasks", [\App\Http\Controllers\TaskController::class, "create"]);
+    Route::get("/tasks/{id}", [\App\Http\Controllers\TaskController::class, "get"])->where("id", "[0-9]+");
 
 });

@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Task;
 use App\Models\User;
+use Database\Seeders\TaskSeeder;
 use Database\Seeders\UserSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -104,6 +105,54 @@ class TaskTest extends TestCase
             "errors" => [
                 "due_date" => [
                     "The due date field must match the format Y-m-d H:i:s."
+                ]
+            ]
+        ]);
+    }
+
+    function testGetTaskSuccess()
+    {
+        $this->seed([UserSeeder::class, TaskSeeder::class]);
+
+        $task = Task::query()->where("title", "test")->first();
+
+        $this->get("/api/tasks/$task->id", [
+            "Authorization" => "test"
+        ])->assertStatus(200)->assertJson([
+            "data" => [
+                "title" => "test",
+                "description" => "description test",
+            ]
+        ]);
+    }
+
+    function testGetTaskUnauthorized()
+    {
+        $this->seed([UserSeeder::class, TaskSeeder::class]);
+
+        $task = Task::query()->where("title", "test")->first();
+
+        $this->get("/api/tasks/$task->id")->assertStatus(401)->assertJson([
+            "errors" => [
+                "message" => [
+                    "Unauthorized"
+                ]
+            ]
+        ]);
+    }
+
+    function testGetTaskNotFound()
+    {
+        $this->seed([UserSeeder::class, TaskSeeder::class]);
+
+        $task = Task::query()->where("title", "test")->first();
+
+        $this->get("/api/tasks/" . $task->id + 1,[
+            "Authorization" => "test"
+        ])->assertStatus(404)->assertJson([
+            "errors" => [
+                "message" => [
+                    "Task not found"
                 ]
             ]
         ]);

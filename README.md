@@ -309,3 +309,48 @@ deleted_at
     }
 }
 ```
+#### Get Todo by id
+
+```http
+  POST /api/tasks/{id} 
+```
+
+| Header          | Type     | Description                         |
+|:----------------|:---------|:------------------------------------|
+| `Authorization` | `string` | **Required**. Token dari user login |
+
+| Params        | Type      | Description    |
+|:--------------|:----------|:---------------|
+| `id`          | `integer` | **Required**.  |
+
+##### Response
+
+- success 200
+
+```json
+{
+    "data": {
+        "id": 1,
+        "title": "string",
+        "description": "text",
+        "due_date": "datetime",
+        "status": false,
+        "user_id": 1,
+        "created_at": "timestamp",
+        "updated_at": "timestamp",
+        "deleted_at": "timestamp"
+    }
+}
+```
+
+- error
+
+```json
+{
+    "errors": {
+        "message": [
+            "Unauthorized"
+        ]
+    }
+}
+```

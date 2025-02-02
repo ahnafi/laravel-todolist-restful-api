@@ -11,6 +11,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -30,13 +31,16 @@ class UserTest extends TestCase
             "first_name" => "budi",
             "last_name" => "siregar",
             "email" => "budionosiregar@gmail.com",
-            "password" => "bud10n0s1r3g4r"
+            "password" => "Budiono44"
         ])->assertStatus(201)->assertJson(
             [
                 "data" => [
-                    "first_name" => "budi",
-                    "last_name" => "siregar",
-                    "email" => "budionosiregar@gmail.com",
+                    "user" => [
+                        "first_name" => "budi",
+                        "last_name" => "siregar",
+                        "email" => "budionosiregar@gmail.com",
+                    ],
+                    "token_type" => "Bearer"
                 ]
             ]
         );
@@ -91,16 +95,16 @@ class UserTest extends TestCase
 
         $this->post("/api/users/login", [
             "email" => "budi@gmail.com",
-            "password" => "budi12345"
+            "password" => "Budi12345"
         ])->assertStatus(200)->assertJson([
             "data" => [
-                "first_name" => "budi",
-                "email" => "budi@gmail.com"
+                "user" => [
+                    "first_name" => "budi",
+                    "email" => "budi@gmail.com"
+                ],
+                "token_type" => "Bearer"
             ]
         ]);
-
-        $user = User::where("email", "budi@gmail.com")->first();
-        self::assertNotNull($user->token);
     }
 
     public function testUserLoginEmailPasswordRequired()
@@ -124,7 +128,7 @@ class UserTest extends TestCase
 
         $this->post("/api/users/login", [
             "email" => "budi1@gmail.com",
-            "password" => "budi112345"
+            "password" => "Budi12345"
         ])->assertStatus(401)->assertJson([
             "errors" => [
                 "message" => ["Email or Password is wrong"],
@@ -135,9 +139,10 @@ class UserTest extends TestCase
     public function testUserCurrentSuccess()
     {
         $this->seed(UserSeeder::class);
-
+        $user = User::query()->where("email", "budi@gmail.com")->first();
+        $token = $user->createToken("auth_token")->plainTextToken;
         $this->get("/api/users/current", [
-            'Authorization' => "test"
+            'Authorization' => "Bearer $token"
         ])->assertStatus(200)
             ->assertJson([
                 "data" => [
@@ -145,7 +150,6 @@ class UserTest extends TestCase
                     "email" => "budi@gmail.com",
                     "photo" => null,
                     "last_name" => null,
-                    "token" => "test"
                 ]
             ]);
     }
@@ -185,12 +189,14 @@ class UserTest extends TestCase
     public function testUpdateUserNameSuccess()
     {
         $this->seed(UserSeeder::class);
+        $user = User::query()->where("email", "budi@gmail.com")->first();
+        $token = $user->createToken("auth_token")->plainTextToken;
 
         $this->patch("/api/users/current", [
             "first_name" => "alex",
             "last_name" => "kusnandar"
         ], [
-            "Authorization" => "test"
+            "Authorization" => "Bearer $token"
         ])
             ->assertStatus(200)
             ->assertJson([
@@ -204,6 +210,8 @@ class UserTest extends TestCase
     public function testUpdateUserPhotoSuccess()
     {
         $this->seed(UserSeeder::class);
+        $user = User::query()->where("email", "budi@gmail.com")->first();
+        $token = $user->createToken("auth_token")->plainTextToken;
 
         $img = UploadedFile::fake()->image("budi.jpg")->size(200);
 
@@ -212,7 +220,7 @@ class UserTest extends TestCase
         $response = $this->patch("/api/users/current", [
             "photo" => $img
         ], [
-            "Authorization" => "test"
+            "Authorization" => "Bearer $token"
         ]);
 
         $response->assertStatus(200);
@@ -223,7 +231,7 @@ class UserTest extends TestCase
             "data" => [
                 "first_name" => "budi",
                 "last_name" => null,
-                "photo" => $user->photo
+                "photo" => asset("/storage/" . $user->photo)
             ]
         ]);
 
@@ -234,11 +242,13 @@ class UserTest extends TestCase
     public function testUpdateUserPasswordSuccess()
     {
         $this->seed(UserSeeder::class);
+        $user = User::query()->where("email", "budi@gmail.com")->first();
+        $token = $user->createToken("auth_token")->plainTextToken;
 
         $this->patch("/api/users/current", [
-            "password" => "alexxxxxxxx69"
+            "password" => "Alexxxxxxxx69"
         ], [
-            "Authorization" => "test"
+            "Authorization" => "Bearer $token"
         ])
             ->assertStatus(200)
             ->assertJson([
@@ -249,7 +259,7 @@ class UserTest extends TestCase
             ]);
 
         $user = User::where("email", "budi@gmail.com")->first();
-        self::assertTrue(Hash::check('alexxxxxxxx69', $user->password));
+        self::assertTrue(Hash::check('Alexxxxxxxx69', $user->password));
     }
 
     public function testUpdateUserFailedUnauthorized()
@@ -257,7 +267,7 @@ class UserTest extends TestCase
         $this->seed(UserSeeder::class);
 
         $this->patch("/api/users/current", [
-            "password" => "alexxxxxxxx69"
+            "password" => "alexxxxxXXxx69"
         ])
             ->assertStatus(401)
             ->assertJson([
@@ -272,9 +282,11 @@ class UserTest extends TestCase
     public function testUpdateUserFailedNoBody()
     {
         $this->seed(UserSeeder::class);
+        $user = User::query()->where("email", "budi@gmail.com")->first();
+        $token = $user->createToken("auth_token")->plainTextToken;
 
         $this->patch("/api/users/current", [], [
-            "Authorization" => "test"
+            "Authorization" => "Bearer $token"
         ])
             ->assertStatus(400)
             ->assertJson([
@@ -289,11 +301,13 @@ class UserTest extends TestCase
     public function testUpdateUserFailedPassword()
     {
         $this->seed(UserSeeder::class);
+        $user = User::query()->where("email", "budi@gmail.com")->first();
+        $token = $user->createToken("auth_token")->plainTextToken;
 
         $this->patch("/api/users/current", [
             "password" => "test"
         ], [
-            "Authorization" => "test"
+            "Authorization" => "Bearer $token"
         ])
             ->assertStatus(400)
             ->assertJson([
@@ -308,11 +322,13 @@ class UserTest extends TestCase
     public function testUpdateUserFailedFirstName()
     {
         $this->seed(UserSeeder::class);
+        $user = User::query()->where("email", "budi@gmail.com")->first();
+        $token = $user->createToken("auth_token")->plainTextToken;
 
         $this->patch("/api/users/current", [
             "first_name" => "te"
         ], [
-            "Authorization" => "test"
+            "Authorization" => "Bearer $token"
         ])
             ->assertStatus(400)
             ->assertJson([
@@ -327,13 +343,15 @@ class UserTest extends TestCase
     public function testUpdateUserFailedInvalidSizePhoto()
     {
         $this->seed(UserSeeder::class);
+        $user = User::query()->where("email", "budi@gmail.com")->first();
+        $token = $user->createToken("auth_token")->plainTextToken;
 
         $file = UploadedFile::fake()->image("hello.jpg")->size(10);
 
         $this->patch("/api/users/current", [
             "photo" => $file
         ], [
-            "Authorization" => "test"
+            "Authorization" => "Bearer $token"
         ])
             ->assertStatus(400)
             ->assertJson([
@@ -348,6 +366,8 @@ class UserTest extends TestCase
     public function testUpdateUserFailedInvalidPhoto()
     {
         $this->seed(UserSeeder::class);
+        $user = User::query()->where("email", "budi@gmail.com")->first();
+        $token = $user->createToken("auth_token")->plainTextToken;
 
         $file = UploadedFile::fake()->image("hello")->size(200);
 //        $file = UploadedFile::fake()->create("hello.txt","200","image/jpeg");
@@ -355,7 +375,7 @@ class UserTest extends TestCase
         $this->patch("/api/users/current", [
             "photo" => $file
         ], [
-            "Authorization" => "test"
+            "Authorization" => "Bearer $token"
         ])
             ->assertStatus(400)
             ->assertJson([
@@ -370,10 +390,12 @@ class UserTest extends TestCase
     public function testLogoutUserSuccess()
     {
         $this->seed(UserSeeder::class);
+        $user = User::query()->where("email", "budi@gmail.com")->first();
+        $token = $user->createToken("auth_token")->plainTextToken;
 
         $this->post("/api/users/logout", [],
             [
-                "Authorization" => "test"
+                "Authorization" => "Bearer $token"
             ])->assertStatus(200)
             ->assertJson([
                 "data" => true
@@ -407,6 +429,17 @@ class UserTest extends TestCase
                     ]
                 ]
             ]);
+    }
+
+    function testToken()
+    {
+        $this->seed(UserSeeder::class);
+        $user = User::where("email", "budi@gmail.com")->first();
+
+        $token = $user->createToken("auth_token")->plainTextToken;
+
+        self::assertNotNull($token);
+        Log::info("token : " . $token);
     }
 
 }

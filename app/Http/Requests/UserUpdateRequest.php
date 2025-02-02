@@ -7,6 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\File;
+use Illuminate\Validation\Rules\Password;
 
 class UserUpdateRequest extends FormRequest
 {
@@ -28,7 +29,7 @@ class UserUpdateRequest extends FormRequest
         return [
             'first_name' => ['nullable', 'string', 'min:3', "max:100"],
             'last_name' => ['nullable', 'string', "max:100"],
-            'password' => ['nullable', 'string', 'min:8', "max:255"],
+            'password' => ['nullable', 'string', Password::min(8)->numbers()->mixedCase()],
             'photo' => ['nullable', File::image()->min('25kb')->max('2mb')]
         ];
     }

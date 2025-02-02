@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rules\Password;
 
 class UserLoginRequest extends FormRequest
 {
@@ -25,7 +26,7 @@ class UserLoginRequest extends FormRequest
     {
         return [
             "email" => ["email", "string", "required"],
-            "password" => ["string", "required"]
+            "password" => [Password::min(8)->numbers()->mixedCase(), "required"]
         ];
     }
 

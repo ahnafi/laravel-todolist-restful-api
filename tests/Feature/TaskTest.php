@@ -6,8 +6,6 @@ use App\Models\Task;
 use App\Models\User;
 use Database\Seeders\TaskSeeder;
 use Database\Seeders\UserSeeder;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 
@@ -25,19 +23,20 @@ class TaskTest extends TestCase
     {
         $this->seed(UserSeeder::class);
 
-        $user = User::where("token", "test")->first();
+        $user = User::query()->where("email", "budi@gmail.com")->first();
+        $token = $user->createToken("auth_token")->plainTextToken;
 
         $this->post("/api/tasks", [
             "title" => "test todo",
             "description" => "Test Description",
             "due_date" => now()->toDateTimeString(),
         ], [
-            "Authorization" => "test"
+            "Authorization" => "Bearer $token"
         ])->assertStatus(201)->assertJson([
             "data" => [
                 "title" => "test todo",
                 "description" => "Test Description",
-                "due_date" => now()->toDateTimeString(),
+                "due_date",
                 "status" => false,
                 "user_id" => $user->id
             ]
@@ -52,14 +51,15 @@ class TaskTest extends TestCase
     {
         $this->seed(UserSeeder::class);
 
-        $user = User::where("token", "test")->first();
+        $user = User::query()->where("email", "budi@gmail.com")->first();
+        $token = $user->createToken("auth_token")->plainTextToken;
 
         $this->post("/api/tasks", [
 
             "description" => "Test Description",
             "due_date" => now()->toDateTimeString()
         ], [
-            "Authorization" => "test"
+            "Authorization" => "Bearer $token"
         ])->assertStatus(400)->assertJson([
             "errors" => [
                 "title" => [
@@ -73,7 +73,8 @@ class TaskTest extends TestCase
     {
         $this->seed(UserSeeder::class);
 
-        $user = User::where("token", "test")->first();
+        $user = User::query()->where("email", "budi@gmail.com")->first();
+        $token = $user->createToken("auth_token")->plainTextToken;
 
         $this->post("/api/tasks", [
             "title" => "a",
@@ -93,14 +94,15 @@ class TaskTest extends TestCase
     {
         $this->seed(UserSeeder::class);
 
-        $user = User::where("token", "test")->first();
+        $user = User::query()->where("email", "budi@gmail.com")->first();
+        $token = $user->createToken("auth_token")->plainTextToken;
 
         $this->post("/api/tasks", [
             "title" => "a",
             "description" => "Test Description",
             "due_date" => "hello"
         ], [
-            "Authorization" => "test"
+            "Authorization" => "Bearer $token"
         ])->assertStatus(400)->assertJson([
             "errors" => [
                 "due_date" => [
@@ -113,11 +115,13 @@ class TaskTest extends TestCase
     function testGetTaskSuccess()
     {
         $this->seed([UserSeeder::class, TaskSeeder::class]);
+        $user = User::query()->where("email", "budi@gmail.com")->first();
+        $token = $user->createToken("auth_token")->plainTextToken;
 
         $task = Task::query()->where("title", "test")->first();
 
         $this->get("/api/tasks/$task->id", [
-            "Authorization" => "test"
+            "Authorization" => "Bearer $token"
         ])->assertStatus(200)->assertJson([
             "data" => [
                 "title" => "test",
@@ -144,11 +148,13 @@ class TaskTest extends TestCase
     function testGetTaskNotFound()
     {
         $this->seed([UserSeeder::class, TaskSeeder::class]);
+        $user = User::query()->where("email", "budi@gmail.com")->first();
+        $token = $user->createToken("auth_token")->plainTextToken;
 
         $task = Task::query()->where("title", "test")->first();
 
-        $this->get("/api/tasks/" . $task->id + 1,[
-            "Authorization" => "test"
+        $this->get("/api/tasks/" . $task->id + 1, [
+            "Authorization" => "Bearer $token"
         ])->assertStatus(404)->assertJson([
             "errors" => [
                 "message" => [

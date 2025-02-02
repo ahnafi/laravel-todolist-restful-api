@@ -19,9 +19,9 @@ class UserResource extends JsonResource
             "first_name" => $this->first_name,
             "last_name" => $this->last_name ?? null,
             "email" => $this->email,
-            "token" => $this->whenNotNull($this->token),
-            "photo" => $this->photo ?? null,
-            "created_at" => $this->created_at
+            "photo" => $this->photo != null ? asset("storage/" . $this->photo) : null,
+            "created_at" => $this->created_at,
+            "updated_at" => $this->updated_at
         ];
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRegisterRequest;
+use App\Http\Resources\AuthResource;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -19,14 +20,19 @@ class AuthController extends Controller
     {
         $data = $request->validated();
 
-        $user = new User($data);
-        $user->password = Hash::make($data['password']);
-        $user->save();
+        $user = User::create($data);
+        $token = $user->createToken("auth_token")->plainTextToken;
 
-        return (new UserResource($user))->response()->setStatusCode(201);
+        return response()->json([
+            "data" => [
+                "user" => UserResource::make($user),
+                "token_type" => "Bearer",
+                "token" => $token
+            ]
+        ], 201);
     }
 
-    public function login(UserLoginRequest $request): UserResource
+    public function login(UserLoginRequest $request): JsonResponse
     {
         $data = $request->validated();
 
@@ -41,21 +47,21 @@ class AuthController extends Controller
             ], 401));
         }
 
-        $user->token = Str::uuid()->toString();
-        $user->save();
+        $token = $user->createToken("auth_token")->plainTextToken;
 
-        return new UserResource($user);
+        return response()->json([
+            "data" => [
+                "user" => UserResource::make($user),
+                "token_type" => "Bearer",
+                "token" => $token
+            ]
+        ]);
     }
 
     public function logout(Request $request): JsonResponse
     {
-        $user = Auth::user();
-
-        $user->token = null;
-        $user->save();
-
-        Auth::logout();
-
+        $user = $request->user();
+        $user->currentAccessToken()->delete;
         return response()->json([
             "data" => true
         ]);

@@ -17,7 +17,10 @@ class Task extends Model
         "title",
         "description",
         "due_date",
-        "status"
+    ];
+
+    protected $casts = [
+        "status" => "boolean"
     ];
 
     public function user(): BelongsTo

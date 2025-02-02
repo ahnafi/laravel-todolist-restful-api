@@ -16,11 +16,8 @@ class TaskController extends Controller
     {
         $data = $request->validated();
 
-        $user = Auth::user();
-
-        $task = new Task($data);
-        $task->user_id = $user->id;
-        $task->save();
+        $user = $request->user();
+        $task = $user->tasks()->create($data);
 
         return new TaskResource($task);
     }
@@ -30,7 +27,7 @@ class TaskController extends Controller
 
         $user = Auth::user();
 
-        $task = Task::query()->where("user_id", $user->id)->where("id", $id)->first();
+        $task = $user->tasks()->where("id", $id)->first();
 
         if (!$task) {
             throw new HttpResponseException(response([

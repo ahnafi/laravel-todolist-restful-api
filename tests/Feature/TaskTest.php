@@ -36,13 +36,12 @@ class TaskTest extends TestCase
             "data" => [
                 "title" => "test todo",
                 "description" => "Test Description",
-                "due_date",
                 "status" => false,
                 "user_id" => $user->id
             ]
         ]);
 
-        Log::info(json_encode($user->tasks, JSON_PRETTY_PRINT));
+        Log::info(json_encode($user->load("tasks"), JSON_PRETTY_PRINT));
 
         self::assertCount(1, $user->tasks);
     }
@@ -153,7 +152,7 @@ class TaskTest extends TestCase
 
         $task = Task::query()->where("title", "test")->first();
 
-        $this->get("/api/tasks/" . $task->id + 1, [
+        $this->get("/api/tasks/" . $task->id + 100, [
             "Authorization" => "Bearer $token"
         ])->assertStatus(404)->assertJson([
             "errors" => [

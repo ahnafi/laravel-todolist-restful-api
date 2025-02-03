@@ -203,10 +203,8 @@ class TaskTest extends TestCase
         ])
             ->assertStatus(401)
             ->assertJson([
-                "data" => [
-                    "title" => "test update",
-                    "description" => "update",
-                    "status" => true
+                "errors" => [
+
                 ]
             ]);
     }

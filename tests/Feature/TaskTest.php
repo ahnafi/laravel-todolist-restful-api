@@ -238,5 +238,71 @@ class TaskTest extends TestCase
             ]);
     }
 
+    function testUpdateTaskNotFound()
+    {
+        $this->seed([UserSeeder::class, TaskSeeder::class]);
+        $task = Task::query()->where("title", "test")->first();
+        $user = User::query()->where("email", "budi@gmail.com")->first();
+        $token = $user->createToken("auth_token")->plainTextToken;
+        $header = ["Authorization" => "Bearer $token"];
+
+        $this->patch("/api/tasks/" . $task->id + 100, [
+            "title" => "",
+        ], $header)
+            ->assertStatus(404)
+            ->assertJson([
+                "errors" => [
+                ]
+            ]);
+    }
+
+    function testRemoveTaskSuccess()
+    {
+        $this->seed([UserSeeder::class, TaskSeeder::class]);
+        $task = Task::query()->where("title", "test")->first();
+        $user = User::query()->where("email", "budi@gmail.com")->first();
+        $token = $user->createToken("auth_token")->plainTextToken;
+        $header = ["Authorization" => "Bearer $token"];
+
+        $this->delete("/api/tasks/" . $task->id, [], $header)
+            ->assertStatus(200)
+            ->assertJson([
+                "data" => true
+            ]);
+    }
+
+    function testRemoveTaskNotFound()
+    {
+        $this->seed([UserSeeder::class, TaskSeeder::class]);
+        $task = Task::query()->where("title", "test")->first();
+        $user = User::query()->where("email", "budi@gmail.com")->first();
+        $token = $user->createToken("auth_token")->plainTextToken;
+        $header = ["Authorization" => "Bearer $token"];
+
+        $this->delete("/api/tasks/" . $task->id + 100, [], $header)
+            ->assertStatus(404)
+            ->assertJson([
+                "errors" => [
+
+                ]
+            ]);
+    }
+
+    function testRemoveTaskUnauthorized()
+    {
+        $this->seed([UserSeeder::class, TaskSeeder::class]);
+        $task = Task::query()->where("title", "test")->first();
+        $user = User::query()->where("email", "budi@gmail.com")->first();
+        $token = $user->createToken("auth_token")->plainTextToken;
+        $header = ["Authorization" => "Bearer $token"];
+
+        $this->delete("/api/tasks/" . $task->id + 100, [])
+            ->assertStatus(401)
+            ->assertJson([
+                "errors" => [
+
+                ]
+            ]);
+    }
 
 }

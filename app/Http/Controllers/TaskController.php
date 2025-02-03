@@ -5,11 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\TaskCreateRequest;
 use App\Http\Requests\TaskUpdateRequest;
 use App\Http\Resources\TaskResource;
-use App\Models\Task;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 class TaskController extends Controller
 {
@@ -63,5 +62,27 @@ class TaskController extends Controller
 
         $task->update($data);
         return new TaskResource($task);
+    }
+
+    public function remove(Request $request, int $id): JsonResponse
+    {
+        $user = $request->user();
+        $task = $user->tasks->find($id);
+
+        if (!$task) {
+            throw new HttpResponseException(response([
+                "errors" => [
+                    "message" => [
+                        "Task not found"
+                    ]
+                ]
+            ], 404));
+        }
+
+        $task->delete();
+
+        return response()->json([
+            "data" => true
+        ]);
     }
 }

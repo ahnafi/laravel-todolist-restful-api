@@ -18,5 +18,6 @@ Route::middleware("auth:sanctum")->group(function () {
 
     Route::post("/tasks", [\App\Http\Controllers\TaskController::class, "create"]);
     Route::get("/tasks/{id}", [\App\Http\Controllers\TaskController::class, "get"])->where("id", "[0-9]+");
+    Route::patch("/tasks/{id}", [\App\Http\Controllers\TaskController::class, "update"])->where("id", "[0-9]+");
 
 });

@@ -162,4 +162,81 @@ class TaskTest extends TestCase
             ]
         ]);
     }
+
+    function testUpdateTaskSuccess()
+    {
+        $this->seed([UserSeeder::class, TaskSeeder::class]);
+        $task = Task::query()->where("title", "test")->first();
+        $user = User::query()->where("email", "budi@gmail.com")->first();
+        $token = $user->createToken("auth_token")->plainTextToken;
+        $header = ["Authorization" => "Bearer $token"];
+
+        $this->patch("/api/tasks/" . $task->id, [
+            "title" => "test update",
+            "description" => "update",
+            "due_date" => now()->toDateTimeString(),
+            "status" => true
+        ], $header)
+            ->assertStatus(200)
+            ->assertJson([
+                "data" => [
+                    "title" => "test update",
+                    "description" => "update",
+                    "status" => true
+                ]
+            ]);
+    }
+
+    function testUpdateTaskUnauthorized()
+    {
+        $this->seed([UserSeeder::class, TaskSeeder::class]);
+        $task = Task::query()->where("title", "test")->first();
+        $user = User::query()->where("email", "budi@gmail.com")->first();
+        $token = $user->createToken("auth_token")->plainTextToken;
+        $header = ["Authorization" => "Bearer $token"];
+
+        $this->patch("/api/tasks/" . $task->id, [
+            "title" => "test update",
+            "description" => "update",
+            "due_date" => now()->toDateTimeString(),
+            "status" => true
+        ])
+            ->assertStatus(401)
+            ->assertJson([
+                "data" => [
+                    "title" => "test update",
+                    "description" => "update",
+                    "status" => true
+                ]
+            ]);
+    }
+
+    function testUpdateTaskFailedField()
+    {
+        $this->seed([UserSeeder::class, TaskSeeder::class]);
+        $task = Task::query()->where("title", "test")->first();
+        $user = User::query()->where("email", "budi@gmail.com")->first();
+        $token = $user->createToken("auth_token")->plainTextToken;
+        $header = ["Authorization" => "Bearer $token"];
+
+        $this->patch("/api/tasks/" . $task->id, [
+            "title" => "",
+            "description" => "update",
+            "due_date" => now(),
+            "status" => "yes"
+        ], $header)
+            ->assertStatus(400)
+            ->assertJson([
+                "errors" => [
+                    "due_date" => [
+                        "The due date field must match the format Y-m-d H:i:s."
+                    ],
+                    "status" => [
+                        "The status field must be true or false."
+                    ]
+                ]
+            ]);
+    }
+
+
 }

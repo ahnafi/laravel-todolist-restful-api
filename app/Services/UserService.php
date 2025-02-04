@@ -22,7 +22,11 @@ class UserService
         $validated = $request->validated();
 
         if (isset($validated["photo"])) {
-            $user->photo = $this->SavePhoto($request);
+            $path = $this->SavePhoto($request);
+            if ($user->photo) {
+                Storage::disk("public")->delete($user->photo);
+            }
+            $user->photo = $path;
         }
 
         if (isset($validated["first_name"])) $user->first_name = $validated["first_name"];

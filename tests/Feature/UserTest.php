@@ -25,6 +25,12 @@ class UserTest extends TestCase
         Storage::deleteDirectory("profiles");
     }
 
+    function testCreate100Users()
+    {
+        User::factory()->count(100)->create();
+        self::assertTrue(true);
+    }
+
     public function testUserRegisterSuccess()
     {
         $this->post("/api/users/register", [

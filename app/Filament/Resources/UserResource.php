@@ -29,7 +29,7 @@ class UserResource extends Resource
                 TextInput::make("last_name")->nullable()->maxLength(100),
                 TextInput::make("email")->email()->required(function ($record){return is_null($record);})->unique(ignoreRecord: true),
                 TextInput::make("password")->required(function ($record){return is_null($record);})->password()->dehydrated(fn($state) => filled($state))->minLength(8)->revealable(),
-                FileUpload::make("photo")->nullable()->image()->disk("public")->directory("profiles")
+                FileUpload::make("photo")->nullable()->image()->disk("public")->directory("profiles")->columnSpan(2)
             ]);
     }
 

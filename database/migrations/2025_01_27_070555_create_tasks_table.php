@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->string("title", 100)->nullable(false);
             $table->text("description")->nullable();
             $table->dateTime("due_date")->nullable();
-            $table->boolean("status")->nullable(false)->default(false);
+            $table->enum("status", ['draft', 'scheduled', 'published'])->default('draft');
             $table->unsignedBigInteger("user_id")->nullable(false);
             $table->foreign("user_id")->references("id")->on("users")->onDelete("cascade");
             $table->softDeletes();

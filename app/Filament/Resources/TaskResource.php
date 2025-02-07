@@ -5,7 +5,6 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\TaskResource\Pages;
 use App\Filament\Resources\TaskResource\RelationManagers;
 use App\Models\Task;
-use Carbon\Traits\Date;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -25,22 +24,17 @@ class TaskResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('title'),
+                Forms\Components\TextInput::make('title')
+                    ->required()
+                    ->maxLength(100),
+                Forms\Components\Textarea::make('description')
+                    ->columnSpanFull(),
                 Forms\Components\DateTimePicker::make('due_date'),
-                Forms\Components\Textarea::make('description')->autosize(),
-                Forms\Components\ToggleButtons::make('status')
-                    ->options([
-                        'draft' => 'Draft',
-                        'scheduled' => 'Scheduled',
-                        'published' => 'Published'
-                    ])
-                    ->colors([
-                        'draft' => 'info',
-                        'scheduled' => 'warning',
-                        'published' => 'success',
-                    ]),
-
-
+                Forms\Components\TextInput::make('status')
+                    ->required(),
+                Forms\Components\Select::make('user_id')
+                    ->relationship('user', 'first_name')
+                    ->required(),
             ]);
     }
 
@@ -48,18 +42,30 @@ class TaskResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('title')->description(function ($record) {
-                    return $record->description;
-                }),
-                Tables\Columns\TextColumn::make('due_date')->dateTime(),
-                Tables\Columns\TextColumn::make('status')->badge()->color(fn(string $state): string => match ($state) {
-                    'draft' => 'info',
-                    'scheduled' => 'warning',
-                    'published' => 'success',
-                }),
+                Tables\Columns\TextColumn::make('title')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('due_date')
+                    ->dateTime()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('status'),
+                Tables\Columns\TextColumn::make('user.id')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('deleted_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -67,6 +73,8 @@ class TaskResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\ForceDeleteBulkAction::make(),
+                    Tables\Actions\RestoreBulkAction::make(),
                 ]),
             ]);
     }
@@ -85,5 +93,13 @@ class TaskResource extends Resource
             'create' => Pages\CreateTask::route('/create'),
             'edit' => Pages\EditTask::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
     }
 }
